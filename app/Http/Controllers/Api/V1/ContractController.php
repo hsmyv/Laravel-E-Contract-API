@@ -11,9 +11,16 @@ use Illuminate\Http\Request;
 
 class ContractController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return new ContractCollection(Contract::all());
+        $contracts = Contract::all();
+
+        if ($request->search) {
+            $contracts = Contract::where("name", "like", "%{$request->search}%")
+                ->get();
+        }
+
+        return ContractResource::collection($contracts);
     }
 
     public function show(Contract $contract)
@@ -39,5 +46,4 @@ class ContractController extends Controller
         $contract->delete();
         return response()->json("Contract Deleted");
     }
-
 }
