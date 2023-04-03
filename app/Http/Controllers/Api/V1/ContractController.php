@@ -13,12 +13,9 @@ class ContractController extends Controller
 {
     public function index(Request $request)
     {
-        $contracts = Contract::all();
-
-        if ($request->search) {
-            $contracts = Contract::where("name", "like", "%{$request->search}%")
-                ->get();
-        }
+        $contracts =  Contract::when(request('search'), function($query) {
+            $query->where('name', 'like', '%'. request('search') . '%');
+        })->orderBy('id', 'desc')->get();
 
         return ContractResource::collection($contracts);
     }
