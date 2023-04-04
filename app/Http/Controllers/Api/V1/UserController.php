@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Resources\UserCollection;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,20 +18,25 @@ class UserController extends Controller
         $user = User::create($request->validated());
         $token = $user->createToken('myappToken')->plainTextToken;
         $response = authResponse($user, $token);
-
+        Auth::login($user);
         return response()->json($response, 200);
     }
 
     public function login(LoginRequest $request)
     {
-        if (Auth::guard('web')->attempt($request->validated())) {
 
+        if (Auth()->attempt($request->validated())) {
+            session()->regenerate();
             $user = Auth::user();
 
-            $token = $user->createToken('myappToken')->plainTextToken;
+            $success['token'] = $user->createToken('myappToken')->plainTextToken;
+            $success['name']  = $user->name;
 
-            $response = authResponse($user, $token);
-
+            $response = [
+                'success' => true,
+                'data'    => $success,
+                'message' => "created"
+            ];
             return response()->json($response, 200);
         } else {
             throw ValidationException::withMessages([
@@ -39,9 +45,14 @@ class UserController extends Controller
         }
     }
 
-    public function getAuthUser()
+    public function loggedInUser()
     {
-        $user = Auth::user();
-        return response()->json(['data' => $user->name], 200);
+        try {
+            $user = User::where('id', auth()->user()->id)->get();
+            return response()->json( new UserCollection($user),200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
+
     }
 }

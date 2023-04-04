@@ -24,7 +24,8 @@ class StoreContractRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'min:3', 'max:50']
+            'name' => ['required', 'min:3', 'max:50'],
+            'body' => 'min:3'
         ];
     }
 }
