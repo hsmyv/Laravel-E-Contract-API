@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserCollection;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
@@ -29,7 +31,8 @@ class UserController extends Controller
             session()->regenerate();
             $user = Auth::user();
 
-            $success['token'] = $user->createToken('myappToken')->plainTextToken;
+            $success['token'] = JWTAuth::fromUser(Auth::user());
+
             $success['name']  = $user->name;
 
             $response = [
@@ -48,8 +51,13 @@ class UserController extends Controller
     public function loggedInUser()
     {
         try {
-            $user = User::where('id', auth()->user()->id)->get();
-            return response()->json( new UserCollection($user),200);
+            if (Auth::check()) {
+                $userId = Auth::user()->id;
+                $user = User::where('id', $userId)->first();
+                return new UserResource($user);
+            } else {
+                return response()->json(['error' => 'User not authenticated'], 401);
+            }
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }

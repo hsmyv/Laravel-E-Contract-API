@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -20,8 +22,16 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+        $user = Auth::user();
 
-        return response()->noContent();
+        $success['token'] = $user->createToken('myappToken')->plainTextToken;
+
+        $response = [
+            'success' => true,
+            'data'    => $success,
+            'message' => "created"
+        ];
+        return response()->json($response, 200);
     }
 
     /**
