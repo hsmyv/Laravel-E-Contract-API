@@ -26,26 +26,20 @@ class UserController extends Controller
 
     public function login(LoginRequest $request)
     {
+        
+        session()->regenerate();
+        $user = Auth::user();
 
-        if (Auth()->attempt($request->validated())) {
-            session()->regenerate();
-            $user = Auth::user();
+        $success['token'] = $user->createToken('myappToken')->plainTextToken;
 
-            $success['token'] = JWTAuth::fromUser(Auth::user());
+        $success['name']  = $user->name;
 
-            $success['name']  = $user->name;
-
-            $response = [
-                'success' => true,
-                'data'    => $success,
-                'message' => "created"
-            ];
-            return response()->json($response, 200);
-        } else {
-            throw ValidationException::withMessages([
-                'Error' => ['Invalid credentials'],
-            ]);
-        }
+        $response = [
+            'success' => true,
+            'data'    => $success,
+            'message' => "created"
+        ];
+        return response()->json($response, 200);
     }
 
     public function loggedInUser()
@@ -61,6 +55,5 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
-
     }
 }
