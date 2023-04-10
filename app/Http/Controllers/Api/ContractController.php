@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreContractRequest;
+use App\Http\Resources\ContractResource;
+use App\Models\Contract;
+use Illuminate\Http\Request;
+
+class ContractController extends Controller
+{
+    public function index(Request $request)
+    {
+        $contracts =  Contract::when(request('search'), function ($query) {
+            $query->where('name', 'like', '%' . request('search') . '%');
+        })->orderBy('id', 'desc')->get();
+
+        return ContractResource::collection($contracts);
+    }
+
+    public function show(Contract $contract)
+    {
+        return new ContractResource($contract);
+    }
+
+
+    public function store(StoreContractRequest $request)
+    {
+        Contract::create($request->validated());
+        return response()->json("Contract Created");
+    }
+
+    public function update(StoreContractRequest $request, Contract $contract)
+    {
+        $contract->update($request->validated());
+        return response()->json("Contract Updated");
+    }
+
+    public function destroy(Contract $contract)
+    {
+        $contract->delete();
+        return response()->json("Contract Deleted");
+    }
+}
