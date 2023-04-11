@@ -27,7 +27,9 @@ class ContractController extends Controller
 
     public function store(StoreContractRequest $request)
     {
-        Contract::create($request->validated());
+        $contract = $request->validated();
+        $contract['user_id'] = auth()->user()->id;
+        Contract::create($contract);
         return response()->json("Contract Created");
     }
 
