@@ -17,8 +17,9 @@ class AllContractsCollection extends ResourceCollection
         return $this->collection->map(function ($contract) {
            return [
             'id' => $contract->id,
+            'name' => $contract->name,
             'body' => $contract->body,
-            'created_ad' => $contract->created_at->format(' M D Y'),
+            'created_at' => $contract->created_at->format(' M D Y'),
             'user' => [
                 'id' => $contract->user->id,
                 'name' => $contract->user->name,
