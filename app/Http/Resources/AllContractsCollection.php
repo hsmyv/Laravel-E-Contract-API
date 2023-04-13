@@ -15,16 +15,17 @@ class AllContractsCollection extends ResourceCollection
     public function toArray($request)
     {
         return $this->collection->map(function ($contract) {
-           return [
-            'id' => $contract->id,
-            'name' => $contract->name,
-            'body' => $contract->body,
-            'created_at' => $contract->created_at->format(' M D Y'),
-            'user' => [
-                'id' => $contract->user->id,
-                'name' => $contract->user->name,
-            ]
-           ];
+            return [
+                'id' => $contract->id ?? null,
+                'name' => $contract->name ?? null,
+                'body' => $contract->body ?? null,
+                'created_at' => $contract->created_at ? $contract->created_at->format(' M D Y') : null,
+                'user' => [
+                    'id' => $contract->user ? $contract->user->id : null,
+                    'name' => $contract->user ? $contract->user->name : null,
+                ]
+            ];
         });
     }
+
 }

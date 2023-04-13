@@ -13,11 +13,16 @@ class ContractController extends Controller
 {
     public function index(Request $request)
     {
-        $contracts =  Contract::when(request('search'), function ($query) {
-            $query->where('name', 'like', '%' . request('search') . '%');
-        })->orderBy('id', 'desc')->get();
+        //  $contracts =  Contract::when(request('search'), function ($query) {
+        //      $query->where('name', 'like', '%' . request('search') . '%');
+        //  })->orderBy('id', 'desc')->get();
 
-        return ContractResource::collection($contracts);
+        try{
+        $contracts = Contract::orderBy('created_at', 'desc')->get();
+         return response()->json(new AllContractsCollection($contracts), 200);
+           } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
     }
 
     public function show($id)
@@ -54,8 +59,15 @@ class ContractController extends Controller
 
     public function update(StoreContractRequest $request, Contract $contract)
     {
-        $contract->update($request->validated());
-        return response()->json("Contract Updated");
+        $request->validated();
+        try {
+            $contract->name = $request->input('name');
+            $contract->body = $request->input('body');
+            $contract->save();
+            return response()->json(['success' => 'OK'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
     }
 
     public function destroy(Contract $contract)

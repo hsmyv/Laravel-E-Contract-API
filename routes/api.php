@@ -21,7 +21,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // return $request->user();
     Route::get('/logged-in-user', [UserController::class, 'loggedInUser']);
     Route::get('/profiles/{id}', [ProfileController::class, 'show']);
-
-
 });
 Route::apiResource('contracts', ContractController::class);
+Route::get('/getContracts', [ContractController::class, 'index']);
