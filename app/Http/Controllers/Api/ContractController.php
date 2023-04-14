@@ -13,16 +13,15 @@ class ContractController extends Controller
 {
     public function index(Request $request)
     {
-        //  $contracts =  Contract::when(request('search'), function ($query) {
-        //      $query->where('name', 'like', '%' . request('search') . '%');
-        //  })->orderBy('id', 'desc')->get();
-
-        try{
-        $contracts = Contract::orderBy('created_at', 'desc')->get();
-         return response()->json(new AllContractsCollection($contracts), 200);
-           } catch (\Exception $e) {
+        try {
+            $contracts = Contract::when(request('search'), function ($query) {
+                $query->where('name', 'like', '%' . request('search') . '%');
+            })->orderBy('id', 'desc')->get();
+            return response()->json(new AllContractsCollection($contracts), 200);
+        } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
+
     }
 
     public function show($id)
