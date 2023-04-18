@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\ContractController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -17,10 +19,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/home',             [HomeController::class, 'index']);
+
 Route::middleware('auth:sanctum')->group(function () {
     // return $request->user();
     Route::get('/logged-in-user', [UserController::class, 'loggedInUser']);
     Route::get('/profiles/{id}', [ProfileController::class, 'show']);
+
+    Route::get('/posts/{id}', [PostController::class, 'show']);
+    Route::post('/posts', [PostController::class, 'store']);
+    Route::delete('/posts/{id}', [PostController::class, 'destroy']);
+
 });
 Route::apiResource('contracts', ContractController::class);
 Route::get('/getContracts', [ContractController::class, 'index']);
+Route::get('/posts', [PostController::class, 'index']);

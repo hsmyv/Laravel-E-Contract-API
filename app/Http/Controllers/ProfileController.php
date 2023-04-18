@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\AllContractsCollection;
+use App\Http\Resources\AllPostCollection;
 use App\Http\Resources\UserCollection;
 use App\Models\Contract;
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -15,9 +17,11 @@ class ProfileController extends Controller
 
         try {
             $contracts = Contract::where('user_id', $id)->orderBy('created_at', 'desc')->get();
+            $posts = Post::where('user_id', $id)->orderBy('created_at', 'desc')->get();
             $user = User::where('id', $id)->get();
             return response()->json([
                 'contracts' => new AllContractsCollection($contracts),
+                'posts'     => new AllPostCollection($posts),
                 'user' => new UserCollection($user)
             ], 200);
         } catch (\Exception $e) {
