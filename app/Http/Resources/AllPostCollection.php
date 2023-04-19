@@ -23,6 +23,7 @@ class AllPostCollection extends ResourceCollection
                 'user' => [
                     'id' => $post->user->id,
                     'name' => $post->user->name,
+                    'image' => url('/') . $post->user->image
                 ]
             ];
         });
