@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\ContractController;
+use App\Http\Controllers\DraftController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
@@ -30,8 +31,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/posts/{id}', [PostController::class, 'show']);
     Route::post('/posts', [PostController::class, 'store']);
     Route::delete('/posts/{id}', [PostController::class, 'destroy']);
-
 });
+Route::apiResource('drafts', DraftController::class);
+
 Route::apiResource('contracts', ContractController::class);
 Route::get('/getContracts', [ContractController::class, 'index']);
 Route::get('/posts', [PostController::class, 'index']);
